@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "285951515003",
+    "firebase_url": "https://h2overview-iot-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "h2overview-iot",
+    "storage_bucket": "h2overview-iot.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:285951515003:android:941418a13f07e2eec085de",
+        "android_client_info": {
+          "package_name": "com.nesvier.h2overview"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEEqPBkK5rkvByNQMzs6isQGwO240doyM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
