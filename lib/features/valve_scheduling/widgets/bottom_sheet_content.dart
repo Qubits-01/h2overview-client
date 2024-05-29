@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:h2overview/utils/utils.dart';
 import 'package:intl/intl.dart';
 
 import '../models/schedule.dart';
@@ -14,6 +16,7 @@ class BottomSheetContent extends StatefulWidget {
 }
 
 class _BottomSheetContentState extends State<BottomSheetContent> {
+  final db = FirebaseFirestore.instance;
   final List<String> _daysOfWeek = [
     'Monday',
     'Tuesday',
@@ -261,16 +264,46 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
                     return;
                   }
 
-                  // Save the schedule.
-                  final newSchedule = Schedule(
-                    startTime: _startTime!,
-                    endTime: _endTime!,
-                    days: _selectedDays,
+                  // // Save the schedule.
+                  // final newSchedule = Schedule(
+                  //   startTime: _startTime!,
+                  //   endTime: _endTime!,
+                  //   days: _selectedDays,
+                  // );
+
+                  // widget._schedules.add(newSchedule);
+
+                  final List<int> days = _selectedDays.map((day) {
+                    return fromDayStringToInt(day);
+                  }).toList();
+                  days.sort();
+
+                  final int startTime = fromTimeOfDayToMinutesFromMidnight(
+                    _startTime!,
+                  );
+                  final int endTime = fromTimeOfDayToMinutesFromMidnight(
+                    _endTime!,
                   );
 
-                  widget._schedules.add(newSchedule);
+                  // Save the new schedule to Firestore.
+                  db
+                      .collection('devices')
+                      .doc('H2O-12345')
+                      .collection('preferences')
+                      .doc('scheduled_valve_control')
+                      .update({
+                    'schedules': FieldValue.arrayUnion(
+                      [
+                        {
+                          'days': days,
+                          'start_time': startTime,
+                          'end_time': endTime,
+                        },
+                      ],
+                    ),
+                  });
 
-                  setState(() {});
+                  // setState(() {});
 
                   Navigator.pop(context);
                 },

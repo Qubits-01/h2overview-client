@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:h2overview/features/valve_scheduling/widgets/is_enabled_switch.dart';
 import 'package:intl/intl.dart';
 
+import '../../utils/utils.dart';
 import 'models/schedule.dart';
 import 'widgets/bottom_sheet_content.dart';
 
@@ -14,79 +17,8 @@ class ValveSchedulingScreen extends StatefulWidget {
 }
 
 class _ValveSchedulingScreenState extends State<ValveSchedulingScreen> {
-  bool _isEnabled = false;
-  // ignore: prefer_final_fields
+  final db = FirebaseFirestore.instance;
   List<Schedule> _schedules = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Mock data.
-    _schedules = [
-      Schedule(
-        startTime: const TimeOfDay(hour: 8, minute: 15),
-        endTime: const TimeOfDay(hour: 10, minute: 0),
-        days: ['Monday', 'Wednesday', 'Friday'],
-      ),
-      Schedule(
-        startTime: const TimeOfDay(hour: 12, minute: 0),
-        endTime: const TimeOfDay(hour: 14, minute: 30),
-        days: ['Tuesday', 'Thursday'],
-      ),
-      Schedule(
-        startTime: const TimeOfDay(hour: 8, minute: 15),
-        endTime: const TimeOfDay(hour: 10, minute: 0),
-        days: ['Monday', 'Wednesday', 'Friday'],
-      ),
-      Schedule(
-        startTime: const TimeOfDay(hour: 12, minute: 0),
-        endTime: const TimeOfDay(hour: 14, minute: 30),
-        days: ['Tuesday', 'Thursday'],
-      ),
-      Schedule(
-        startTime: const TimeOfDay(hour: 8, minute: 15),
-        endTime: const TimeOfDay(hour: 10, minute: 0),
-        days: ['Monday', 'Wednesday', 'Friday'],
-      ),
-      Schedule(
-        startTime: const TimeOfDay(hour: 12, minute: 0),
-        endTime: const TimeOfDay(hour: 14, minute: 30),
-        days: ['Tuesday', 'Thursday'],
-      ),
-      Schedule(
-        startTime: const TimeOfDay(hour: 8, minute: 15),
-        endTime: const TimeOfDay(hour: 10, minute: 0),
-        days: ['Monday', 'Wednesday', 'Friday'],
-      ),
-      Schedule(
-        startTime: const TimeOfDay(hour: 12, minute: 0),
-        endTime: const TimeOfDay(hour: 14, minute: 30),
-        days: ['Tuesday', 'Thursday'],
-      ),
-    ];
-  }
-
-  int _fromDayStringToInt(String day) {
-    switch (day) {
-      case 'Monday':
-        return DateTime.monday;
-      case 'Tuesday':
-        return DateTime.tuesday;
-      case 'Wednesday':
-        return DateTime.wednesday;
-      case 'Thursday':
-        return DateTime.thursday;
-      case 'Friday':
-        return DateTime.friday;
-      case 'Saturday':
-        return DateTime.saturday;
-      case 'Sunday':
-        return DateTime.sunday;
-      default:
-        return DateTime.monday;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,177 +32,249 @@ class _ValveSchedulingScreenState extends State<ValveSchedulingScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 // Is Enabled Switch.
-                Card(
-                  child: SwitchListTile(
-                    value: _isEnabled,
-                    title: const Text('Is Enabled'),
-                    subtitle:
-                        const Text('Enable or disable the valve scheduling'),
-                    // Remove the padding around the SwitchListTile.
-                    // contentPadding: EdgeInsets.zero,
-                    shape: ShapeBorder.lerp(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      1,
-                    ),
-                    onChanged: (bool value) {
-                      setState(() {
-                        _isEnabled = value;
-                      });
-                    },
-                  ),
-                ),
+                const IsEnabledSwitch(),
                 const SizedBox(height: 16),
 
-                // Container that displays the schedules.
-                ..._schedules.map(
-                  (Schedule schedule) {
-                    return Column(
-                      children: <Widget>[
-                        Card.outlined(
-                          child: Slidable(
-                            // The start action pane is the one at the left or the top side.
-                            startActionPane: ActionPane(
-                              // A motion is a widget used to control how the pane animates.
-                              motion: const ScrollMotion(),
+                // Get the schedules from Firestore.
+                StreamBuilder<DocumentSnapshot>(
+                  stream: db
+                      .collection('devices')
+                      .doc('H2O-12345')
+                      .collection('preferences')
+                      .doc('scheduled_valve_control')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
 
-                              // All actions are defined in the children parameter.
-                              children: [
-                                // A SlidableAction can have an icon and/or a label.
-                                SlidableAction(
-                                  onPressed: (context) {
-                                    // Show dialog asking for confirmation. The dialog should not close if tapped outside.
-                                    showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: const Text('Delete Schedule'),
-                                          content: const Text(
-                                              'Are you sure you want to delete this schedule?'),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text('Cancel'),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  _schedules.remove(schedule);
-                                                });
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text('Delete'),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(12.0),
-                                    bottomLeft: Radius.circular(12.0),
-                                  ),
-                                  backgroundColor: const Color(0xFFFE4A49),
-                                  foregroundColor: Colors.white,
-                                  icon: Icons.delete,
-                                  label: 'Delete',
-                                ),
-                              ],
-                            ),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  // Format: From startTime to endTime.
-                                  Text('From ${DateFormat.jm().format(
-                                    DateTime(
-                                      2021,
-                                      1,
-                                      1,
-                                      schedule.startTime.hour,
-                                      schedule.startTime.minute,
-                                    ),
-                                  )} to ${DateFormat.jm().format(
-                                    DateTime(
-                                      2021,
-                                      1,
-                                      1,
-                                      schedule.endTime.hour,
-                                      schedule.endTime.minute,
-                                    ),
-                                  )}'),
-                                  const SizedBox(height: 8),
+                    if (snapshot.hasError) {
+                      return const Text('An error occurred.');
+                    }
 
-                                  // Circular widget with the days of the week.
-                                  Wrap(
-                                    children: <Widget>[
-                                      for (final day in schedule.days)
-                                        Container(
-                                          width: 48.0,
-                                          height: 48.0,
-                                          margin: const EdgeInsets.all(4.0),
-                                          padding: const EdgeInsets.all(4.0),
-                                          alignment: Alignment.center,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.blue,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Text(
-                                            DateFormat.E().format(
-                                              DateTime(2021, 1, 1, 0, 0).add(
-                                                  Duration(
-                                                      days: _fromDayStringToInt(
-                                                          day))),
-                                            ),
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ],
+                    // Get the schedules from the snapshot.
+                    final data = snapshot.data!.data() as Map<String, dynamic>;
+                    final schedules = data['schedules'] as List<dynamic>;
+
+                    // If there are no schedules.
+                    if (schedules.isEmpty) {
+                      return Card.outlined(
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(32.0),
+                          child: Column(
+                            children: <Widget>[
+                              // Show an svg illustration.
+                              SvgPicture.asset(
+                                'assets/illustrations/undraw_time_management_re_tk5w.svg',
+                                width: 120.0,
                               ),
-                            ),
+                              const SizedBox(height: 16),
+                              const Text('No schedules added yet.',
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                  )),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 8.0),
+                      );
+                    }
+
+                    // Convert the schedules to a list of Schedule objects.
+                    _schedules = schedules.map((schedule) {
+                      final rawDays = schedule['days'] as List<dynamic>;
+                      final List<int> days =
+                          rawDays.map((day) => day as int).toList();
+                      days.sort();
+
+                      return Schedule(
+                        startTime: minutesFromMidnightToTimeOfDay(
+                            schedule['start_time'] as int),
+                        endTime: minutesFromMidnightToTimeOfDay(
+                            schedule['end_time'] as int),
+                        days: days.map((day) {
+                          return numDayToStringDay(day);
+                        }).toList(),
+                      );
+                    }).toList();
+
+                    return Column(
+                      children: <Widget>[
+                        ..._schedules.map(
+                          (Schedule schedule) {
+                            return Column(
+                              children: <Widget>[
+                                Slidable(
+                                  // The start action pane is the one at the left or the top side.
+                                  startActionPane: ActionPane(
+                                    // A motion is a widget used to control how the pane animates.
+                                    motion: const ScrollMotion(),
+
+                                    // All actions are defined in the children parameter.
+                                    children: [
+                                      // A SlidableAction can have an icon and/or a label.
+                                      SlidableAction(
+                                        onPressed: (context) {
+                                          // Show dialog asking for confirmation. The dialog should not close if tapped outside.
+                                          showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                title: const Text(
+                                                    'Delete Schedule'),
+                                                content: const Text(
+                                                    'Are you sure you want to delete this schedule?'),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: const Text('Cancel'),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () async {
+                                                      setState(() {
+                                                        _schedules
+                                                            .remove(schedule);
+                                                      });
+
+                                                      // Delete the schedule from Firestore.
+                                                      await db
+                                                          .collection('devices')
+                                                          .doc('H2O-12345')
+                                                          .collection(
+                                                              'preferences')
+                                                          .doc(
+                                                              'scheduled_valve_control')
+                                                          .update({
+                                                        'schedules': _schedules
+                                                            .map((schedule) {
+                                                          return {
+                                                            'start_time':
+                                                                fromTimeOfDayToMinutesFromMidnight(
+                                                                    schedule
+                                                                        .startTime),
+                                                            'end_time':
+                                                                fromTimeOfDayToMinutesFromMidnight(
+                                                                    schedule
+                                                                        .endTime),
+                                                            'days': schedule
+                                                                .days
+                                                                .map((day) {
+                                                              return fromDayStringToInt(
+                                                                  day);
+                                                            }).toList(),
+                                                          };
+                                                        }).toList(),
+                                                      });
+
+                                                      if (context.mounted) {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      }
+                                                    },
+                                                    child: const Text('Delete'),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(12.0),
+                                          bottomLeft: Radius.circular(12.0),
+                                        ),
+                                        backgroundColor:
+                                            const Color(0xFFFE4A49),
+                                        foregroundColor: Colors.white,
+                                        icon: Icons.delete,
+                                        label: 'Delete',
+                                      ),
+                                    ],
+                                  ),
+                                  child: Card.outlined(
+                                    child: Column(
+                                      children: <Widget>[
+                                        Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                              // Format: From startTime to endTime.
+                                              Text(
+                                                  'From ${DateFormat.jm().format(
+                                                DateTime(
+                                                  2021,
+                                                  1,
+                                                  1,
+                                                  schedule.startTime.hour,
+                                                  schedule.startTime.minute,
+                                                ),
+                                              )} to ${DateFormat.jm().format(
+                                                DateTime(
+                                                  2021,
+                                                  1,
+                                                  1,
+                                                  schedule.endTime.hour,
+                                                  schedule.endTime.minute,
+                                                ),
+                                              )}'),
+                                              const SizedBox(height: 8),
+
+                                              // Circular widget with the days of the week.
+                                              Wrap(
+                                                children: <Widget>[
+                                                  for (final day
+                                                      in schedule.days)
+                                                    Container(
+                                                      width: 48.0,
+                                                      height: 48.0,
+                                                      margin:
+                                                          const EdgeInsets.all(
+                                                              4.0),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              4.0),
+                                                      alignment:
+                                                          Alignment.center,
+                                                      decoration:
+                                                          const BoxDecoration(
+                                                        color: Colors.blue,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                      child: Text(
+                                                        dayStringToAbbreviation(
+                                                            day),
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8.0),
+                              ],
+                            );
+                          },
+                        ),
                       ],
                     );
                   },
                 ),
 
-                // If there are no schedules.
-                if (_schedules.isEmpty)
-                  Card.outlined(
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(32.0),
-                      child: Column(
-                        children: <Widget>[
-                          // Show an svg illustration.
-                          SvgPicture.asset(
-                            'assets/illustrations/undraw_time_management_re_tk5w.svg',
-                            width: 120.0,
-                          ),
-                          const SizedBox(height: 16),
-                          const Text('No schedules added yet.',
-                              style: TextStyle(
-                                color: Colors.black54,
-                              )),
-                        ],
-                      ),
-                    ),
-                  ),
                 const SizedBox(height: 16),
                 const Divider(),
                 const SizedBox(height: 16),
