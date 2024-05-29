@@ -110,7 +110,10 @@ class _RemoteValveControlScreenState extends State<RemoteValveControlScreen> {
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Text('Loading...');
+                  return const Text(
+                    'Loading...',
+                    style: TextStyle(fontSize: 24),
+                  );
                 }
 
                 final data = snapshot.data?.data() as Map<String, dynamic>;

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:h2overview/features/health_check_scheduling/health_check_scheduling_screen.dart';
+import 'package:h2overview/features/user_profile/user_profile_screen.dart';
 
 import 'analytics/analytics_screen.dart';
 import 'manual_leak_scan/manual_leak_scan_screen.dart';
@@ -29,6 +31,15 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('User Profile'),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return const UserProfileScreen();
+                }));
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.analytics),
               title: const Text('Analytics'),
               onTap: () {
@@ -47,11 +58,11 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.schedule),
-              title: const Text('Valve Scheduling'),
+              leading: const Icon(Icons.health_and_safety),
+              title: const Text('Health Check Scheduling'),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const ValveSchedulingScreen();
+                  return const HealthCheckSchedulingScreen();
                 }));
               },
             ),
@@ -61,6 +72,15 @@ class HomeScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return const RemoteValveControlScreen();
+                }));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.schedule),
+              title: const Text('Valve Scheduling'),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return const ValveSchedulingScreen();
                 }));
               },
             ),

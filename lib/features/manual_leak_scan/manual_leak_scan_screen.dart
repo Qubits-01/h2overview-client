@@ -51,7 +51,7 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Remote Valve Control'),
+        title: const Text('Manual Leak Scan'),
       ),
       body: SizedBox(
         width: double.infinity,
