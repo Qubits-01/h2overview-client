@@ -5,11 +5,11 @@ class AnalyticsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       // appBar: AppBar(
       //   title: const Text('Analytics'),
       // ),
-      body: const Center(
+      body: Center(
         child: Text('Analytics Screen'),
       ),
     );

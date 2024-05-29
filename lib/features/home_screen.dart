@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:h2overview/features/health_check_scheduling/health_check_scheduling_screen.dart';
-import 'package:h2overview/features/user_profile/user_profile_screen.dart';
+import 'health_check_scheduling/health_check_scheduling_screen.dart';
+import 'user_profile/user_profile_screen.dart';
 
 import 'analytics/analytics_screen.dart';
 import 'manual_leak_scan/manual_leak_scan_screen.dart';
