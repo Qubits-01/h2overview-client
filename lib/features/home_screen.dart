@@ -120,6 +120,37 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(getScreenTitle(_screenIndex)),
+        actions: <Widget>[
+          // Info
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: () {
+              // Show info dialog.
+              showDialog<void>(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('H2Overview'),
+                    content: const Text(
+                      'This is a demo app for a fictitious company called H2Overview. '
+                      'The app is designed to help users manage their water systems. '
+                      'This demo app is not connected to any real water systems. '
+                      'The app is for demonstration purposes only.',
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
       drawer: NavigationDrawer(
         onDestinationSelected: handleScreenChanged,
