@@ -50,9 +50,9 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Manual Leak Scan'),
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Manual Leak Scan'),
+      // ),
       body: SizedBox(
         width: double.infinity,
         child: Column(

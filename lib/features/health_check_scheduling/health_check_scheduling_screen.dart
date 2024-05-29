@@ -6,9 +6,9 @@ class HealthCheckSchedulingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Health Check Scheduling'),
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Health Check Scheduling'),
+      // ),
       body: const Center(
         child: Text('Health Check Scheduling Screen'),
       ),

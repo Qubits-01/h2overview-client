@@ -35,9 +35,9 @@ class _RemoteValveControlScreenState extends State<RemoteValveControlScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Remote Valve Control'),
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Remote Valve Control'),
+      // ),
       body: SizedBox(
         width: double.infinity,
         child: Column(
