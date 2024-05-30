@@ -23,6 +23,7 @@ class H2OverviewApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const HomeScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
