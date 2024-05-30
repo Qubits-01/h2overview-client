@@ -1,10 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:h2overview/utils/utils.dart';
 
 import '../resources/app_colors.dart';
 
 class GeneralizeLineGraph extends StatefulWidget {
-  const GeneralizeLineGraph({super.key});
+  const GeneralizeLineGraph(data, {super.key}) : _data = data;
+
+  final List<Map<String, dynamic>> _data;
 
   @override
   State<GeneralizeLineGraph> createState() => _GeneralizeLineGraph();
@@ -65,14 +68,38 @@ class _GeneralizeLineGraph extends State<GeneralizeLineGraph> {
     );
     Widget text;
     switch (value.toInt()) {
+      // case 2:
+      //   text = const Text('MAR', style: style);
+      //   break;
+      // case 5:
+      //   text = const Text('JUN', style: style);
+      //   break;
+      // case 8:
+      //   text = const Text('SEP', style: style);
+      //   break;
+      // default:
+      //   text = const Text('', style: style);
+      //   break;
+      case 0:
+        text = const Text('S', style: style);
+        break;
+      case 1:
+        text = const Text('M', style: style);
+        break;
       case 2:
-        text = const Text('MAR', style: style);
+        text = const Text('T', style: style);
+        break;
+      case 3:
+        text = const Text('W', style: style);
+        break;
+      case 4:
+        text = const Text('Th', style: style);
         break;
       case 5:
-        text = const Text('JUN', style: style);
+        text = const Text('F', style: style);
         break;
-      case 8:
-        text = const Text('SEP', style: style);
+      case 6:
+        text = const Text('Sa', style: style);
         break;
       default:
         text = const Text('', style: style);
@@ -90,6 +117,32 @@ class _GeneralizeLineGraph extends State<GeneralizeLineGraph> {
       fontWeight: FontWeight.bold,
       fontSize: 15,
     );
+
+    List<Map<String, dynamic>> data = widget._data;
+    List<int> dataValues = [];
+    List<DateTime> dataDates = [];
+
+    for (var i = 0; i < data.length; i++) {
+      dataValues.add(data[i]['value']);
+      dataDates.add(data[i]['timestamp']);
+    }
+
+    // print('[ dataValues ]');
+    // print(dataValues);
+
+    // print('[ dataDates ]');
+    // print(dataDates);
+
+    final minMax = getMinMax(dataValues);
+    final int min = minMax.$1;
+    final int max = minMax.$2;
+    // print('[ min ]');
+    // print(min);
+    // print('[ max ]');
+    // print(max);
+
+    // Using the min and max values, give me a list of 4 divisions (0, x, y, max).
+
     String text;
     switch (value.toInt()) {
       case 1:
