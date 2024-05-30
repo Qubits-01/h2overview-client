@@ -32,7 +32,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     .collection('devices')
                     .doc('H2O-12345')
                     .collection('waterflow')
-                    // .orderBy('timestamp', descending: true)
+                    .orderBy('timestamp', descending: true)
                     .limit(10)
                     .snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -51,10 +51,14 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         final data = document.data() as Map<String, dynamic>;
 
                         final timestamp = data['timestamp'] as Timestamp;
+
+                        // Convert the Timestamp to a DateTime.
+                        final dateTime = timestamp.toDate();
+
                         final value = data['value'] as int;
 
                         return ListTile(
-                          title: Text('Timestamp: $timestamp'),
+                          title: Text('Timestamp: $dateTime'),
                           subtitle: Text('Value: $value'),
                         );
                       }),

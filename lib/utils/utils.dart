@@ -101,3 +101,29 @@ TimeOfDay minutesFromMidnightToTimeOfDay(int minutesFromMidnight) {
 int fromTimeOfDayToMinutesFromMidnight(TimeOfDay time) {
   return time.hour * 60 + time.minute;
 }
+
+String scanTypeToReadable(String scanType) {
+  switch (scanType) {
+    case 'quick':
+      return 'Quick';
+    case 'recommended':
+      return 'Recommended';
+    case 'long':
+      return 'Long';
+    default:
+      return 'Quick';
+  }
+}
+
+String leakResultToReadable(String leakResult) {
+  switch (leakResult) {
+    case 'no_leak':
+      return 'No leak detected :)';
+    case 'leak':
+      return 'Leak detected!';
+    case 'error':
+      return 'Error! Something went wrong';
+    default:
+      return 'No leak detected :)';
+  }
+}

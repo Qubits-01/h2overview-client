@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:h2overview/utils/utils.dart';
 
 class ManualLeakScanScreen extends StatefulWidget {
   const ManualLeakScanScreen({super.key});
@@ -32,7 +33,7 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
     });
   }
 
-  Future<String> _getResult() async {
+  Future<Map<String, dynamic>> _getResult() async {
     final result = db
         .collection('devices')
         .doc('H2O-12345')
@@ -42,7 +43,16 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
         .get()
         .then((snapshot) {
       final data = snapshot.docs.first.data();
-      return data['leak_result'] as String;
+      final timestamp = data['timestamp'] as Timestamp;
+      final dateTime = timestamp.toDate();
+      final leakResult = data['leak_result'] as String;
+      final scanType = data['scan_type'] as String;
+
+      return {
+        'timestamp': dateTime,
+        'leak_result': leakResultToReadable(leakResult),
+        'scan_type': scanTypeToReadable(scanType),
+      };
     });
 
     return result;
@@ -225,7 +235,7 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
                             builder: (context) {
                               return AlertDialog(
                                 title: const Text('Manual Leak Scan Results'),
-                                content: FutureBuilder<String>(
+                                content: FutureBuilder<Map<String, dynamic>>(
                                   future: _getResult(),
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
@@ -233,8 +243,22 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
                                       return const Text('Loading...');
                                     }
 
-                                    return Text(
-                                        snapshot.data ?? 'No results yet');
+                                    return Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          'Leak Result: ${snapshot.data!['leak_result']}',
+                                        ),
+                                        Text(
+                                          'Scan Type: ${snapshot.data!['scan_type']}',
+                                        ),
+                                        Text(
+                                          'Timestamp: ${snapshot.data!['timestamp']}',
+                                        ),
+                                      ],
+                                    );
                                   },
                                 ),
                                 actions: <Widget>[
