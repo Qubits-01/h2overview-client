@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 6:
         return const LineChartSample2();
       default:
-        return const UserProfileScreen();
+        return const AnalyticsScreen();
     }
   }
 
@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 6:
         return 'Data Visualization';
       default:
-        return 'User Profile';
+        return 'Analytics';
     }
   }
 
