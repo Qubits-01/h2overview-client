@@ -30,19 +30,19 @@ import 'package:flutter/material.dart';
 
 int fromDayStringToInt(String day) {
   switch (day) {
-    case 'Saturday':
-      return 0;
     case 'Sunday':
-      return 1;
+      return 0;
     case 'Monday':
-      return 2;
+      return 1;
     case 'Tuesday':
-      return 3;
+      return 2;
     case 'Wednesday':
-      return 4;
+      return 3;
     case 'Thursday':
-      return 5;
+      return 4;
     case 'Friday':
+      return 5;
+    case 'Saturday':
       return 6;
     default:
       return 0;
@@ -52,21 +52,21 @@ int fromDayStringToInt(String day) {
 String numDayToStringDay(int numDay) {
   switch (numDay) {
     case 0:
-      return 'Saturday';
-    case 1:
       return 'Sunday';
-    case 2:
+    case 1:
       return 'Monday';
-    case 3:
+    case 2:
       return 'Tuesday';
-    case 4:
+    case 3:
       return 'Wednesday';
-    case 5:
+    case 4:
       return 'Thursday';
-    case 6:
+    case 5:
       return 'Friday';
-    default:
+    case 6:
       return 'Saturday';
+    default:
+      return 'Sunday';
   }
 }
 

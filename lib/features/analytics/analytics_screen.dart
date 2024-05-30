@@ -26,6 +26,29 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           width: double.infinity,
           child: Column(
             children: <Widget>[
+              // Test
+              // StreamBuilder(
+              //   stream: db
+              //       .collection('devices')
+              //       .doc('H2O-12345')
+              //       .collection('waterflow')
+              //       .snapshots(),
+              //   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              //     if (snapshot.hasData) {
+              //       return Column(
+              //         children: snapshot.data!.docs.map((doc) {
+              //           return ListTile(
+              //             title: Text(doc['name']),
+              //             subtitle: Text(doc['age'].toString()),
+              //           );
+              //         }).toList(),
+              //       );
+              //     } else {
+              //       return const SizedBox();
+              //     }
+              //   },
+              // ),
+
               const SizedBox(height: 8.0),
 
               // Calendar view segmented button (Water Flow).
