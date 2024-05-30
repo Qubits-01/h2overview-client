@@ -12,6 +12,7 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
   final db = FirebaseFirestore.instance;
 
   bool _isManualLeakScanRunning = false;
+  String _scanType = 'quick';
 
   @override
   void initState() {
@@ -100,7 +101,7 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
                 _isManualLeakScanRunning = !_isManualLeakScanRunning;
                 final isManualLeakScanRunningData = <String, dynamic>{
                   'value': _isManualLeakScanRunning,
-                  'scan_type': 'quick',
+                  'scan_type': _scanType,
                   'timestamp': DateTime.now(),
                 };
 
@@ -143,7 +144,45 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
                 size: 100,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 8.0),
+
+            // Radio button selector for 'quick' or 'recommended' or 'long' scan.
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Radio<String>(
+                  value: 'quick',
+                  groupValue: _scanType,
+                  onChanged: (value) {
+                    setState(() {
+                      _scanType = value!;
+                    });
+                  },
+                ),
+                const Text('Quick'),
+                Radio<String>(
+                  value: 'recommended',
+                  groupValue: _scanType,
+                  onChanged: (value) {
+                    setState(() {
+                      _scanType = value!;
+                    });
+                  },
+                ),
+                const Text('Recommended'),
+                Radio<String>(
+                  value: 'long',
+                  groupValue: _scanType,
+                  onChanged: (value) {
+                    setState(() {
+                      _scanType = value!;
+                    });
+                  },
+                ),
+                const Text('Long'),
+              ],
+            ),
+            const SizedBox(height: 48.0),
 
             // Stream builder to listen for changes in the valve state.
             StreamBuilder<DocumentSnapshot>(

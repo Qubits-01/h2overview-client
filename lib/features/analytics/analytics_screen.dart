@@ -27,27 +27,41 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           child: Column(
             children: <Widget>[
               // Test
-              // StreamBuilder(
-              //   stream: db
-              //       .collection('devices')
-              //       .doc('H2O-12345')
-              //       .collection('waterflow')
-              //       .snapshots(),
-              //   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              //     if (snapshot.hasData) {
-              //       return Column(
-              //         children: snapshot.data!.docs.map((doc) {
-              //           return ListTile(
-              //             title: Text(doc['name']),
-              //             subtitle: Text(doc['age'].toString()),
-              //           );
-              //         }).toList(),
-              //       );
-              //     } else {
-              //       return const SizedBox();
-              //     }
-              //   },
-              // ),
+              StreamBuilder(
+                stream: db
+                    .collection('devices')
+                    .doc('H2O-12345')
+                    .collection('waterflow')
+                    // .orderBy('timestamp', descending: true)
+                    .limit(10)
+                    .snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    // Loading spinner.
+                    return const CircularProgressIndicator();
+                  }
+
+                  return Column(
+                    children: <Widget>[
+                      ...snapshot.data!.docs.map((DocumentSnapshot document) {
+                        final data = document.data() as Map<String, dynamic>;
+
+                        final timestamp = data['timestamp'] as Timestamp;
+                        final value = data['value'] as int;
+
+                        return ListTile(
+                          title: Text('Timestamp: $timestamp'),
+                          subtitle: Text('Value: $value'),
+                        );
+                      }),
+                    ],
+                  );
+                },
+              ),
 
               const SizedBox(height: 8.0),
 
