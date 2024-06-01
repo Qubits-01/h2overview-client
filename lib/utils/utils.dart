@@ -119,9 +119,9 @@ String leakResultToReadable(String leakResult) {
   switch (leakResult) {
     case 'no_leak':
       return 'No leaks detected';
-    case 'leak':
+    case 'leak_detected':
       return 'Leak detected!';
-    case 'error':
+    case 'failed':
       return 'Error! Something went wrong';
     default:
       return 'No leaks detected';
