@@ -33,11 +33,36 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
     });
   }
 
-  Future<Map<String, dynamic>> _getResult() async {
+  Future<Map<String, dynamic>> _getLatestManualResult() async {
     final result = db
         .collection('devices')
         .doc('H2O-12345')
         .collection('manual_results')
+        .orderBy('timestamp', descending: true)
+        .limit(1)
+        .get()
+        .then((snapshot) {
+      final data = snapshot.docs.first.data();
+      final timestamp = data['timestamp'] as Timestamp;
+      final dateTime = timestamp.toDate();
+      final leakResult = data['leak_result'] as String;
+      final scanType = data['scan_type'] as String;
+
+      return {
+        'timestamp': dateTime,
+        'leak_result': leakResultToReadable(leakResult),
+        'scan_type': scanTypeToReadable(scanType),
+      };
+    });
+
+    return result;
+  }
+
+  Future<Map<String, dynamic>> _getLatestAutoResult() async {
+    final result = db
+        .collection('devices')
+        .doc('H2O-12345')
+        .collection('auto_results')
         .orderBy('timestamp', descending: true)
         .limit(1)
         .get()
@@ -226,7 +251,7 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
 
                     // Button to open the results dialog.
                     Visibility(
-                      visible: !isManualLeakScanRunning,
+                      visible: true,
                       child: ElevatedButton(
                         onPressed: () {
                           showDialog(
@@ -234,9 +259,9 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
                             context: context,
                             builder: (context) {
                               return AlertDialog(
-                                title: const Text('Manual Leak Scan Results'),
+                                title: const Text('Latest Leak Scan Results'),
                                 content: FutureBuilder<Map<String, dynamic>>(
-                                  future: _getResult(),
+                                  future: _getLatestManualResult(),
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
@@ -248,6 +273,7 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
+                                        const Text('MANUAL MODE'),
                                         Text(
                                           'Leak Result: ${snapshot.data!['leak_result']}',
                                         ),
@@ -256,6 +282,31 @@ class _ManualLeakScanScreenState extends State<ManualLeakScanScreen> {
                                         ),
                                         Text(
                                           'Timestamp: ${snapshot.data!['timestamp']}',
+                                        ),
+                                        const SizedBox(height: 20),
+                                        FutureBuilder<Map<String, dynamic>>(
+                                          future: _getLatestAutoResult(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const Text('Loading...');
+                                            }
+
+                                            return Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                const Text('AUTO MODE'),
+                                                Text(
+                                                    'Leak Result: ${snapshot.data!['leak_result']}'),
+                                                Text(
+                                                    'Scan Type: ${snapshot.data!['scan_type']}'),
+                                                Text(
+                                                    'Timestamp: ${snapshot.data!['timestamp']}'),
+                                              ],
+                                            );
+                                          },
                                         ),
                                       ],
                                     );

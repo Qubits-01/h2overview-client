@@ -118,13 +118,13 @@ String scanTypeToReadable(String scanType) {
 String leakResultToReadable(String leakResult) {
   switch (leakResult) {
     case 'no_leak':
-      return 'No leak detected :)';
+      return 'No leaks detected';
     case 'leak':
       return 'Leak detected!';
     case 'error':
       return 'Error! Something went wrong';
     default:
-      return 'No leak detected :)';
+      return 'No leaks detected';
   }
 }
 
