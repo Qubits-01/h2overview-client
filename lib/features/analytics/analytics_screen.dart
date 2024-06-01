@@ -34,7 +34,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     .doc('H2O-12345')
                     .collection('waterflow')
                     .orderBy('timestamp', descending: true)
-                    .limit(10)
+                    .limit(7)
                     .snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError) {
@@ -46,43 +46,52 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     return const CircularProgressIndicator();
                   }
 
-                  // Build the data object.
-                  for (var document in snapshot.data!.docs) {
-                    print(document.data());
+                  _data = snapshot.data!.docs.map((document) {
                     final data = document.data() as Map<String, dynamic>;
 
                     final timestamp = data['timestamp'] as Timestamp;
-                    final dateTime = timestamp.toDate();
-                    final value = data['value'] as int;
 
-                    final temp = {
+                    // Convert the Timestamp to a DateTime.
+                    final dateTime = timestamp.toDate();
+
+                    late final double value;
+                    if (data['value'] is int) {
+                      value = (data['value'] as int).toDouble();
+                    } else {
+                      value = data['value'] as double;
+                    }
+
+                    return {
                       'timestamp': dateTime,
                       'value': value,
                     };
-
-                    _data.add(temp);
-                  }
+                  }).toList();
 
                   print('[data]');
                   print(_data);
 
                   return Column(
                     children: <Widget>[
-                      ...snapshot.data!.docs.map((DocumentSnapshot document) {
-                        final data = document.data() as Map<String, dynamic>;
+                      // ...snapshot.data!.docs.map((DocumentSnapshot document) {
+                      //   final data = document.data() as Map<String, dynamic>;
 
-                        final timestamp = data['timestamp'] as Timestamp;
+                      //   final timestamp = data['timestamp'] as Timestamp;
 
-                        // Convert the Timestamp to a DateTime.
-                        final dateTime = timestamp.toDate();
+                      //   // Convert the Timestamp to a DateTime.
+                      //   final dateTime = timestamp.toDate();
 
-                        final value = data['value'] as int;
+                      //   late final double value;
+                      //   if (data['value'] is int) {
+                      //     value = (data['value'] as int).toDouble();
+                      //   } else {
+                      //     value = data['value'] as double;
+                      //   }
 
-                        return ListTile(
-                          title: Text('Timestamp: $dateTime'),
-                          subtitle: Text('Value: $value'),
-                        );
-                      }),
+                      //   return ListTile(
+                      //     title: Text('Timestamp: $dateTime'),
+                      //     subtitle: Text('Value: $value'),
+                      //   );
+                      // }),
 
                       // Graph
                       // Calendar view segmented button (Water Flow).
@@ -132,10 +141,52 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             child: Column(
                               children: <Widget>[
                                 // Chart title
-                                Text('Water Flow (mL)',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      'Water Flow (mL)',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall,
+                                    ),
+
+                                    // Icon button for dialog that display a list of the available data.
+                                    IconButton(
+                                      icon: const Icon(
+                                          Icons.data_exploration_outlined),
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Data'),
+                                              content: Column(
+                                                children: <Widget>[
+                                                  for (final data in _data)
+                                                    ListTile(
+                                                      title: Text(
+                                                          'Timestamp: ${data['timestamp']}'),
+                                                      subtitle: Text(
+                                                          'Value: ${data['value']}'),
+                                                    ),
+                                                ],
+                                              ),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text('Close'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
                                 GeneralizeLineGraph(_data),
                               ],
                             ),

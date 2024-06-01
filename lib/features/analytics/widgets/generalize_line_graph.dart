@@ -81,25 +81,28 @@ class _GeneralizeLineGraph extends State<GeneralizeLineGraph> {
       //   text = const Text('', style: style);
       //   break;
       case 0:
-        text = const Text('S', style: style);
+        text = const Text('0', style: style);
         break;
       case 1:
-        text = const Text('M', style: style);
+        text = const Text('1', style: style);
         break;
       case 2:
-        text = const Text('T', style: style);
+        text = const Text('2', style: style);
         break;
       case 3:
-        text = const Text('W', style: style);
+        text = const Text('3', style: style);
         break;
       case 4:
-        text = const Text('Th', style: style);
+        text = const Text('4', style: style);
         break;
       case 5:
-        text = const Text('F', style: style);
+        text = const Text('5', style: style);
         break;
       case 6:
-        text = const Text('Sa', style: style);
+        text = const Text('6', style: style);
+        break;
+      case 7:
+        text = const Text('7', style: style);
         break;
       default:
         text = const Text('', style: style);
@@ -118,50 +121,67 @@ class _GeneralizeLineGraph extends State<GeneralizeLineGraph> {
       fontSize: 15,
     );
 
-    List<Map<String, dynamic>> data = widget._data;
-    List<int> dataValues = [];
-    List<DateTime> dataDates = [];
-
-    for (var i = 0; i < data.length; i++) {
-      dataValues.add(data[i]['value']);
-      dataDates.add(data[i]['timestamp']);
-    }
-
-    // print('[ dataValues ]');
-    // print(dataValues);
-
-    // print('[ dataDates ]');
-    // print(dataDates);
+    List<double> dataValues = [];
+    dataValues = widget._data.map((e) => e['value'] as double).toList();
 
     final minMax = getMinMax(dataValues);
-    final int min = minMax.$1;
-    final int max = minMax.$2;
-    // print('[ min ]');
-    // print(min);
-    // print('[ max ]');
-    // print(max);
-
-    // Using the min and max values, give me a list of 4 divisions (0, x, y, max).
+    final int min = minMax.$1.toInt();
+    final int max = minMax.$2.toInt();
+    print('[ min ]');
+    print(min);
+    print('[ max ]');
+    print(max);
 
     String text;
     switch (value.toInt()) {
-      case 1:
-        text = '10K';
+      case 0:
+        text = '0';
         break;
       case 3:
-        text = '30k';
+        text = '';
         break;
       case 5:
-        text = '50k';
+        text = '';
         break;
       default:
         return Container();
+    }
+
+    if (value == min) {
+      text = min.toString();
+    }
+
+    if (value == max) {
+      text = max.toString();
     }
 
     return Text(text, style: style, textAlign: TextAlign.left);
   }
 
   LineChartData mainData() {
+    final spots = widget._data
+        .asMap()
+        .entries
+        .map((e) => FlSpot(e.key.toDouble(), e.value['value']))
+        .toList();
+
+    print('[ widget._data ]');
+    print(widget._data.length);
+
+    print('[ spots ]');
+    print(spots.length);
+
+    List<double> dataValues = [];
+    dataValues = widget._data.map((e) => e['value'] as double).toList();
+
+    final minMax = getMinMax(dataValues);
+    final double min = minMax.$1;
+    final double max = minMax.$2;
+    // print('[ min ]');
+    // print(min);
+    // print('[ max ]');
+    // print(max);
+
     return LineChartData(
       gridData: FlGridData(
         show: true,
@@ -202,7 +222,7 @@ class _GeneralizeLineGraph extends State<GeneralizeLineGraph> {
             showTitles: true,
             interval: 1,
             getTitlesWidget: leftTitleWidgets,
-            reservedSize: 42,
+            reservedSize: 0,
           ),
         ),
       ),
@@ -211,20 +231,12 @@ class _GeneralizeLineGraph extends State<GeneralizeLineGraph> {
         border: Border.all(color: const Color(0xff37434d)),
       ),
       minX: 0,
-      maxX: 11,
-      minY: 0,
-      maxY: 6,
+      maxX: 7,
+      minY: min - max * 0.1,
+      maxY: max == 0.0 ? 10 : max + max * 0.1,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(2.6, 2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9.5, 3),
-            FlSpot(11, 4),
-          ],
+          spots: spots,
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,

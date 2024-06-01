@@ -128,9 +128,9 @@ String leakResultToReadable(String leakResult) {
   }
 }
 
-(int, int) getMinMax(List<int> nums) {
-  int min = nums[0];
-  int max = nums[0];
+(double, double) getMinMax(List<double> nums) {
+  double min = nums[0];
+  double max = nums[0];
 
   for (int i = 1; i < nums.length; i++) {
     if (nums[i] < min) {
@@ -143,4 +143,11 @@ String leakResultToReadable(String leakResult) {
   }
 
   return (min, max);
+}
+
+String dateTimeToHHMM(DateTime dateTime) {
+  final String hour = dateTime.hour.toString().padLeft(2, '0');
+  final String minute = dateTime.minute.toString().padLeft(2, '0');
+
+  return '$hour:$minute';
 }
